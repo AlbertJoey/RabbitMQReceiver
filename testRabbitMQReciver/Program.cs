@@ -43,7 +43,7 @@ namespace testRabbitMQReciver
             #endregion
 
             #region  Work queues
-            //var factory = new ConnectionFactory() { HostName = "192.168.100.37", Password = "Git123!@#", UserName = "GitAdmin", Port = 5672 };
+            //var factory = new ConnectionFactory() { HostName = "219.143.6.91", Password = "Git123!@#", UserName = "GitAdmin", Port = 5672 };
             //using (var connection = factory.CreateConnection())
             //using (var channel = connection.CreateModel())
             //{
@@ -189,56 +189,56 @@ namespace testRabbitMQReciver
             #endregion
 
             #region RPC
-            var factory = new ConnectionFactory() { HostName = "192.168.100.37", Password = "Git123!@#", UserName = "GitAdmin", Port = 5672 };
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
-            {
-                channel.QueueDeclare(queue: "rpc_queue",
-                                     durable: false,
-                                     exclusive: false,
-                                     autoDelete: false,
-                                     arguments: null);
-                channel.BasicQos(0, 1, false);
-                var consumer = new QueueingBasicConsumer(channel);
-                channel.BasicConsume(queue: "rpc_queue",
-                                     noAck: false,
-                                     consumer: consumer);
-                Console.WriteLine(" [x] Awaiting RPC requests");
+            //var factory = new ConnectionFactory() { HostName = "192.168.100.37", Password = "Git123!@#", UserName = "GitAdmin", Port = 5672 };
+            //using (var connection = factory.CreateConnection())
+            //using (var channel = connection.CreateModel())
+            //{
+            //    channel.QueueDeclare(queue: "rpc_queue",
+            //                         durable: false,
+            //                         exclusive: false,
+            //                         autoDelete: false,
+            //                         arguments: null);
+            //    channel.BasicQos(0, 1, false);
+            //    var consumer = new QueueingBasicConsumer(channel);
+            //    channel.BasicConsume(queue: "rpc_queue",
+            //                         noAck: false,
+            //                         consumer: consumer);
+            //    Console.WriteLine(" [x] Awaiting RPC requests");
 
-                while (true)
-                {
-                    string response = null;
-                    var ea = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
+            //    while (true)
+            //    {
+            //        string response = null;
+            //        var ea = (BasicDeliverEventArgs)consumer.Queue.Dequeue();
 
-                    var body = ea.Body;
-                    var props = ea.BasicProperties;
-                    var replyProps = channel.CreateBasicProperties();
-                    replyProps.CorrelationId = props.CorrelationId;
+            //        var body = ea.Body;
+            //        var props = ea.BasicProperties;
+            //        var replyProps = channel.CreateBasicProperties();
+            //        replyProps.CorrelationId = props.CorrelationId;
 
-                    try
-                    {
-                        var message = Encoding.UTF8.GetString(body);
-                        int n = int.Parse(message);
-                        Console.WriteLine(" [.] fib({0})", message);
-                        response = fib(n).ToString();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(" [.] " + e.Message);
-                        response = "";
-                    }
-                    finally
-                    {
-                        var responseBytes = Encoding.UTF8.GetBytes(response);
-                        channel.BasicPublish(exchange: "",
-                                             routingKey: props.ReplyTo,
-                                             basicProperties: replyProps,
-                                             body: responseBytes);
-                        channel.BasicAck(deliveryTag: ea.DeliveryTag,
-                                         multiple: false);
-                    }
-                }
-            }
+            //        try
+            //        {
+            //            var message = Encoding.UTF8.GetString(body);
+            //            int n = int.Parse(message);
+            //            Console.WriteLine(" [.] fib({0})", message);
+            //            response = fib(n).ToString();
+            //        }
+            //        catch (Exception e)
+            //        {
+            //            Console.WriteLine(" [.] " + e.Message);
+            //            response = "";
+            //        }
+            //        finally
+            //        {
+            //            var responseBytes = Encoding.UTF8.GetBytes(response);
+            //            channel.BasicPublish(exchange: "",
+            //                                 routingKey: props.ReplyTo,
+            //                                 basicProperties: replyProps,
+            //                                 body: responseBytes);
+            //            channel.BasicAck(deliveryTag: ea.DeliveryTag,
+            //                             multiple: false);
+            //        }
+            //    }
+            //}
             #endregion
         }
         private static int fib(int n)
